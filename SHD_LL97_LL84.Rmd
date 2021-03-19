@@ -1,0 +1,174 @@
+---
+title: "SHD_LL97_LL84"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+Methodology:
+
+Initial steps prior to analyzing and post-processing in R/R Studio were to download and merge the datasets in Excel.
+LL84/09 (amended via LL133/16) data for the 2017 reporting year were obtained from the NYC Mayor's Office of Sustainability website, [Green Buildings & Energy Efficiency](https://www1.nyc.gov/html/gbee/html/plan/ll84_scores.shtml).
+A .csv file listing all properties in NYU Furman Center's [Subsidized Housing Database](http://coredata.nyc/) was obtained.
+INDEX-MATCH for the reference Building-Block-Lot (BBL) number for each property was performed in Excel to merge the 2 datasets.  Not all subsidized housing projects are required to report whole-building annual energy and water consumption under the local legislation.  Covered buildings include only those exceeding 25,000 sq. ft. (or multiple buildings/condos on same tax lot togethering exceeding 100,000 sq. ft.) and three stores in height.
+
+```{r}
+library(maps)
+library(dplyr)
+library(ggplot2)
+library(ggmap)
+library(gridExtra)
+
+# Set working directory
+setwd("~/Desktop/BLOG/Project1")
+
+# Read in data & define column data types
+df_og <- read.csv("full_LL84_SHD_analysis.csv", header = TRUE, na.strings = "NA", colClasses = c(rep("character",2),"numeric", rep("character",9), rep("numeric",2), "character", rep("numeric",2), rep("character",2), rep("numeric",2), rep("character",4),rep("numeric",4), rep("character",9), rep("numeric",2),rep("character",9), rep("numeric",18), rep("character",2)))
+
+
+# Create copy of data frame; preserve initial import.
+dfO <- df_og
+
+# Add field for expiry year using date of program expiration.
+for (i in 1:nrow(dfO))
+{
+  dfO$end_year[i] <- substring(dfO$end_date[i],1,4)
+}
+
+# Filter for only those entries that have data per LL84/09.  Use conditional expressions on GFA and source EUI attributes.
+dfO <- dfO[(dfO$GFA>0 & dfO$source_EUI>0),]
+dfComplete <- df1[complete.cases(df1[,c("source_EUI")]),]
+
+# EXPLORE INVENTORY
+# Summarize # of units by end date
+quantity <- dfComplete %>%
+  group_by(sub_subsidy_name) %>%
+  summarize(tot_sub_units=sum(subsidized_units))
+quantity
+
+# Summarize # of properties & assessed value by end date
+expire <- dfComplete %>%
+  group_by(end_year) %>%
+  summarize(N=n(),total_value=sum(assessed_value))
+expire
+
+# Summarize by subsidy program type
+program <- dfComplete %>%
+  group_by(sub_subsidy_name) %>%
+  summarize(N=n()) %>%
+  mutate(pct=round((N*100/sum(N)),0))
+program
+
+# Create map of non-exempt properties and LL97 financial exposure in 2024
+p <- ggplot(data = subset(dfComplete, (GFA>0 & pct_aff<0.35 & end_year<2031)), aes(x = longitude, y = latitude))
+p + geom_point(aes(color=X2024_exceed)) + coord_map(projection = "albers", lat0=40.5, lat1=50) +
+  guides (fill=FALSE) +
+  theme_minimal() + theme(axis.text=element_blank(), panel.grid=element_blank(), legend.text=element_text(size=8), legend.title=element_text(size=9), axis.title=element_blank())
+
+# Create map of non-exempt properties and LL97 financial exposure in 2030
+p2 <- ggplot(data = subset(dfComplete, (GFA>0 & pct_aff<0.35 & end_year<2031)), aes(x = longitude, y = latitude))
+p2 + geom_point(aes(color=X2030_exceed)) + coord_map(projection = "albers", lat0=40.5, lat1=50) +
+  guides (fill=FALSE) +
+  theme_minimal() + theme(axis.text=element_blank(), panel.grid=element_blank(), legend.text=element_text(size=8), legend.title=element_text(size=9), axis.title=element_blank())
+
+
+# Create new dataset with subset of attributes to be used for tileset.
+clean_df <- subset(dfComplete, select=c("ref_bbl","data_source","data_year","agency_name","project_name",
+                                        "sub_subsidy_name","preservation","start_date","end_date","end_year",
+                                        "owner_type","total_units","subsidized_units","address",
+                                        "pct_aff","year_built","assessed_value","GFA",
+                                        "longitude","latitude","source_EUI","site_EUI",
+                                        "nat_gal","electricity","CO2_LL97.19","CO2_CAP_2029",
+                                        "CO2_CAP_2034"))
+
+#head(clean_df)
+
+# Assign IDs to classify properties.  
+# Cat 0 is for properties that have, as of 2018, operational carbon below the LL97/19-set 2024 emissions limit.
+# Cat 1 is for exempt properties (>35% subsidized units) exceeding their carbon limit but thus not incurring fines.
+# Cat 2 is for non-exempt properties exceeding their carbon limit and thus financially exposed to penalties.
+# Cat 3 is for properties with missing data, i.e., expiry year, total unit/subsidized unit count.
+
+clean_df$cat <- c(rep(0,nrow(clean_df)))
+
+for (i in 1:nrow(clean_df)) {
+  if (clean_df$CO2_CAP_2029[i] < clean_df$CO2_LL97.19[i]) {
+    if (is.na(clean_df$pct_aff[i])) {
+      clean_df$cat[i] <- 3
+    }
+    else if (is.na(clean_df$end_year[i])) {
+      clean_df$cat[i] <- 3
+    }
+    else if (clean_df$pct_aff[i] >= 0.35) {
+      clean_df$cat[i] <- 1
+    }
+    else if (clean_df$pct_aff[i] < 0.35) {
+      clean_df$cat[i] <- 2
+    }
+  else {
+    
+  }
+  }
+}
+
+# Summarize by # of properties in each cat (for future next step: by borough)
+catSum <- clean_df %>%
+  group_by(cat) %>%
+  summarize(N=n()) %>%
+  mutate(pct=round((N*100/sum(N)),0))
+catSum
+
+# Summary, total # of units set to expire within each compliance period.  Grouped by operational carbon performance
+catSum2 <- clean_df %>%
+  group_by(cat, r=cut(as.numeric(end_year), breaks= seq(2019, 2050, by = 5))) %>%
+  summarize_at(vars(subsidized_units),sum)
+catSum2
+
+# Summary, total # of properties with expiring affordability restrictions within each compliance period.  Grouped by operational carbon performance
+unitSum <- clean_df %>%
+  group_by(cat, gr=cut(as.numeric(end_year), breaks= seq(2019, 2050, by = 5))) %>%
+  summarize(N=n())
+unitSum
+
+# Export .csv for upload to Mapbox.
+write.csv(clean_df, file = "/Users/claudiamezey/Desktop/BLOG/SHD_LL84_2017_inv.csv") 
+
+```
+
+```{r}
+library(RColorBrewer)
+
+
+# experiment with plotting directly in R
+
+register_google(key = "AIzaSyBvsEQw75VL4FETLEjZIdRKDuRNpxwnb-I")
+# Create base map of NYC
+nyc_map <- get_map(location = c(lon = -74.00, lat = 40.71), maptype = "satellite", zoom = 11, color="bw")
+nyc_map <- ggmap(nyc_map)
+nyc_map_1 <- nyc_map + stat_density2d(data=subset(clean_df,end_year<2031 & cat!=0), aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom="polygon")
+## Define the spectral colors to fill the density contours
+nyc_map_1 <- nyc_map_1 + scale_fill_gradientn(colours=rev(brewer.pal(7, "Spectral")))
+nyc_map_2
+
+# try another
+# density is points per unit area
+nyc_map_2 <- nyc_map + stat_density2d(data=subset(clean_df,end_year<2031 & cat==1), aes(x=longitude, y=latitude, fill=..level.., alpha=..level..), geom="polygon") +
+  scale_fill_gradientn(colours=rev(brewer.pal(7, "Spectral")))
+
+nyc_map_2
+
+
+#nyc_map <- nyc_map + geom_point(data = subset(clean_df,end_year>=2031),
+                           #        aes(x=longitude,y=latitude,
+                            #           fill="#56B4E9"),size=1.4,shape=21,stroke=0.2,color="black")
+#nyc_map + geom_point(data = subset(clean_df,end_year<2031),aes(x=longitude,y=latitude,
+        #                               fill=factor(cat)),size=1.4,shape=21,stroke=0.2,color="black") +
+ # theme_minimal() + theme(axis.text=element_blank(), panel.grid=element_blank(), legend.text=element_text(size=8), legend.title=element_text(size=9), axis.title=element_blank()) + scale_fill_manual(values=c("#56B4E9","#E69F00","#c92614"))
+
+```
+
+
