@@ -1,4 +1,6 @@
 # decarb-housing
+v1: April 26, 2021
+
 Welcome!
 This map places two movements in conversation: the campaign to expand affordable housing, and the campaign for climate action and environmental justice. It attempts to tease out potentials for coupling decarbonization and housing rights. It inventories the City's subsidized housing by program type, length of affordability term (and hence, the precariousness of that affordability) and building-level carbon impact[1][2]. This map is a piece of a larger story seeking to answer questions around equity, the right to high-quality shelter, resilience and sustainability. Interviews, opinion pieces and photo essays are being developed to add to this dialogue.
 
