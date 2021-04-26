@@ -13,7 +13,7 @@ Jump in! Explore the intersection of the City's affordable housing supply, finan
 
 [1] One of the largest federal programs is the Low-Income Housing Tax Credit (LIHTC) Program. According to NYU Furman Center's database (http://app.coredata.nyc/), over 2,300 properties in NYC are enrolled, with 28% set to age out between 2020 and 2030. The LIHTC Program places 30-year affordability restrictions on properties; however, the initial compliance period only lasts 15 years. Programs like the Year 15 Program preserve long-term affordability beyond 15 years. However, owners do have the option to opt out of affordability restrictions, threatening tenants' housing stability. To learn more, see HUD's report at https://www.huduser.gov/portal/publications/hsgfin/lihtc_report2012.html.
 
-[2] Energy use data are obtained from annual benchmarking data. Per Local Law 84/09 (NYC Benchmarking Law), non-exempt private projects larger than 50,000 sq. ft. gross floor area or City-owned buildings larger than 10,000 sq. ft. (or condo complexes, >100,000 sq. ft.) must report annual energy and water use.
+[2] Energy use data are obtained from annual benchmarking data. Per Local Law 84/09 (NYC Benchmarking Law), non-exempt private projects larger than 50,000 sq. ft. gross floor area or City-owned buildings larger than 10,000 sq. ft. (or condo complexes, >100,000 sq. ft.) must report annual energy and water use.  Access raw data at https://www1.nyc.gov/html/gbee/html/plan/ll84_scores.shtml.
 
 [3] per Local Law 97/19 and amendment 116/20, affects buildings over 25,000 sq. ft. gross floor area. Buildings with over 35% affordable units are exempt and can comply via low-cost prescriptive measures.
 
