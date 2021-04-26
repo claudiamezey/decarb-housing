@@ -17,6 +17,6 @@ Jump in! Explore the intersection of the City's affordable housing supply, finan
 
 [3] per Local Law 97/19 and amendment 116/20, affects buildings over 25,000 sq. ft. gross floor area. Buildings with over 35% affordable units are exempt and can comply via low-cost prescriptive measures.
 
-[4] Urban Green Council, NYC Building Emissions Summary, July 2020.
+[4] Urban Green Council, NYC Building Emissions Law Summary, July 2020. https://www.urbangreencouncil.org/sites/default/files/urban_green_building_emissions_law_summary_2020.02.19.pdf
 
-[5] prescriptive measures include: leak repair; adjusted heat and hot-water temperature setpoints; pipe insulation; weatherization; good maintenance. See the full law at: https://www1.nyc.gov/assets/buildings/local_laws/ll97of2019.pdf.
+[5] prescriptive measures include: leak repair; adjusted heat and hot-water temperature setpoints; pipe insulation; weatherization; good maintenance. See the full law at https://www1.nyc.gov/assets/buildings/local_laws/ll97of2019.pdf.
