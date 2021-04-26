@@ -41,7 +41,7 @@ for (i in 1:nrow(dfO))
 
 # Filter for only those entries that have data per LL84/09.  Use conditional expressions on GFA and source EUI attributes.
 dfO <- dfO[(dfO$GFA>0 & dfO$source_EUI>0),]
-dfComplete <- df1[complete.cases(df1[,c("source_EUI")]),]
+dfComplete <- dfO[complete.cases(dfO[,c("source_EUI")]),]
 
 # EXPLORE INVENTORY
 # Summarize # of units by end date
@@ -93,25 +93,31 @@ clean_df <- subset(dfComplete, select=c("ref_bbl","data_source","data_year","age
 # Cat 2 is for non-exempt properties exceeding their carbon limit and thus financially exposed to penalties.
 # Cat 3 is for properties with missing data, i.e., expiry year, total unit/subsidized unit count.
 
-clean_df$cat <- c(rep(0,nrow(clean_df)))
+clean_df$cat <- c(rep(3,nrow(clean_df)))
+clean_df$cat2 <- c(rep(3,nrow(clean_df)))
 
 for (i in 1:nrow(clean_df)) {
-  if (clean_df$CO2_CAP_2029[i] < clean_df$CO2_LL97.19[i]) {
-    if (is.na(clean_df$pct_aff[i])) {
-      clean_df$cat[i] <- 3
-    }
-    else if (is.na(clean_df$end_year[i])) {
-      clean_df$cat[i] <- 3
-    }
-    else if (clean_df$pct_aff[i] >= 0.35) {
-      clean_df$cat[i] <- 1
-    }
-    else if (clean_df$pct_aff[i] < 0.35) {
-      clean_df$cat[i] <- 2
-    }
-  else {
+  if (!is.na(clean_df$pct_aff[i]) && !is.na(clean_df$end_year[i])) {
     
-  }
+    clean_df$cat[i] <- 0
+    clean_df$cat2[i] <- 0
+    
+    if (clean_df$CO2_CAP_2029[i] < clean_df$CO2_LL97.19[i]) {
+      if (clean_df$pct_aff[i] >= 0.35) {
+        clean_df$cat[i] <- 1
+      }
+      else if (clean_df$pct_aff[i] < 0.35) {
+        clean_df$cat[i] <- 2
+      }
+    }
+    if (clean_df$CO2_CAP_2034[i] < clean_df$CO2_LL97.19[i]) {
+      if (clean_df$pct_aff[i] >= 0.35) {
+        clean_df$cat2[i] <- 1
+      }
+      else if (clean_df$pct_aff[i] < 0.35) {
+        clean_df$cat2[i] <- 2
+      }
+    }
   }
 }
 
@@ -133,6 +139,7 @@ unitSum <- clean_df %>%
   group_by(cat, gr=cut(as.numeric(end_year), breaks= seq(2019, 2050, by = 5))) %>%
   summarize(N=n())
 unitSum
+
 
 # Export .csv for upload to Mapbox.
 write.csv(clean_df, file = "/Users/claudiamezey/Desktop/BLOG/SHD_LL84_2017_inv.csv") 

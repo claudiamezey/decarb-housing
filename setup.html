@@ -1,0 +1,92 @@
+<!-- Claudia Mezey v1 20210426 -->
+<!-- Adapted from Meli Harvey, NYC Sidewalk Widths project: https://github.com/meliharvey/sidewalkwidths-nyc -->
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8" />
+    <title>Potentials: affordability & decarbonization </title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    
+    <meta property="og:title" content="Financial Exposure of NYC's Subsidized Housing to Carbon Emissions Law" />
+    <meta property="og:description" content="This map studies the intersection of affordability and decarbonization in NYC's subsidized housing supply.  It inventories the affordability status of the City's subsidized housing, the precariousness of that affordability and the housing's carbon emissions impact.  Explore the map to learn which subsidizing housing is currently exceeding its 2024 carbon emissions limit set by Local Law 97/19." />
+    <script src = "https://d3js.org/d3.v4.js"></script>
+    <script src = "https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="/css/style.css"></link>
+
+</head>
+<body>
+	<div id="menu" class="column">
+            <button class="btn circle-btn" title="About" onclick="toggleWindow('infoWindow')">
+                <img src="./img/info.png"></img>
+            </button>
+
+            <button class="btn circle-btn" title="Legend" onclick="toggleWindow('legendWindow')">
+                <img src="./img/layers.png"></img>
+            </button>
+
+            <button class="btn circle-btn" title="Charts" onclick="toggleWindow('chartsWindow')">
+                <img src="./img/charts.png"></img>
+            </button>
+	</div>
+
+	<div id="infoWindow" class="window landing" style="display:block">
+		<img id="landingClose" class="close" src="./img/close.png" alt="close" onclick="toggleWindow('infoWindow')" style="display: none;">
+		<div class="content">
+			<h3>Welcome!</h3>
+			<p><h5>This map places two movements in conversation: the campaign to expand affordable housing, and the campaign for climate action and environmental justice.  It attempts to tease out potentials for coupling decarbonization and housing rights.  It inventories the City's subsidized housing by program type, length of affordability term (and hence, the precariousness of that affordability) and building-level carbon impact<sup>1,2</sup>. This map is a piece of a larger story seeking to answer questions around equity, the right to high-quality shelter, resilience and sustainability. Interviews, opinion pieces and photo essays are being developed to add to this dialogue.</h5></p>
+			<p><h4><u>Background</u></h4></p>
+            <p><h5>Beginning in 2024, roughly 20% of the City's buildings will face large fines for their operational emissions under NYC's landmark Carbon Emissions Bill<sup>3,4</sup>.  Operational emissions are those associated with using a building:  heating it, ventilating it, powering it.  Energy consumption produces both direct (gas/fuel boiler) and indirect (electricity) greenhouse gas emissions, which contribute to climate change.  The 2019 Carbon Emissions Bill charts out a regulatory path for reducing the environmental impact of building operations, coming down hard on heavy polluters with the threat of fines of $268/tCO2eq. In pushing property owners towards investments in energy-saving measures and electrified systems, it guides the City towards a future of lower energy demand with fully-electrified, clean-grid operations.</h5></p> 
+            <p><h5>By contrast, sensitive to the costs of capital upgrades, the law gives affordable housing owners some leeway.  The path to compliance is less burdensome than paying for pricey deep energy efficiency retrofits, like replacing HVAC equipment or upgrading windows: affordable housing owners can simply implement low-cost, prescriptive strategies to comply<sup>5</sup>.</h5></p>
+            <p><h5>By highlighting which subsidized housing is currently exceeding its 2024 carbon emissions limit, but whose affordability insulates it from fines, this project asks: what happens when a building's affordability is due to expire?  Is the threat of fines big enough to discourage landlords from converting units to market-rate, instead opting to maintain affordability and thus maintain their exemption from carbon fines?  Do the prescriptive requirements go far enough to benefit the health of residents and the environment, or are these enabling landlords to ignore disuse and disrepair in housing infrastructure, which compromises the well-being of their lower-income tenants?</h5></p> 
+            <p><h5>Jump in! Explore the intersection of the City's affordable housing supply, financial exposure to the 2019 Carbon Emissions Bill and affordability status.  </h5></p>
+            <p><h6>[1] One of the largest federal programs is the Low-Income Housing Tax Credit (LIHTC) Program.  According to NYU Furman Center's <a href="http://app.coredata.nyc/?mlb=false&ntii=&ntr=&mz=14&vtl=https%3A%2F%2Fthefurmancenter.carto.com%2Fu%2Fnyufc%2Fapi%2Fv2%2Fviz%2F98d1f16e-95fd-4e52-a2b1-b7abaf634828%2Fviz.json&mln=false&mlp=true&mlat=40.718&ptsb=&nty=&mb=roadmap&pf=%7B%22subsidies%22%3Atrue%2C%22subsidySubTypes%22%3A%5B%22LIHTC%204%25%22%2C%22LIHTC%209%25%22%2C%22LIHTC%20Year%2015%22%5D%7D&md=table&mlv=false&mlng=-73.996&btl=Borough&atp=properties">database</a>, over 2,300 properties in NYC are enrolled, with 28% set to age out between 2020 and 2030.  The LIHTC Program places 30-year affordability restrictions on properties;  however, the initial compliance period only lasts 15 years.  Programs like the <a href="https://www1.nyc.gov/site/hpd/services-and-information/lihtc-preservation-year-15-program.page#:~:text=The%20Low%2DIncome%20Housing%20Tax,initial%20tax%20credit%20compliance%20period.">Year 15 Program</a> preserve long-term affordability beyond 15 years.  However, owners do have the option <a href="https://ny.curbed.com/2019/10/16/20917475/affordable-housing-units-nyc-anhd-report-de-blasio">to opt out</a> of affordability restrictions, threatening tenants' housing stability.  To learn more, see HUD's <a href="https://www.huduser.gov/portal/publications/hsgfin/lihtc_report2012.html">report</a>.</h6></p>
+            <p><h6>[2] Energy use data are obtained from annual benchmarking data.  Per Local Law 84/09 (NYC Benchmarking Law), non-exempt private projects larger than 50,000 sq. ft. gross floor area or City-owned buildings larger than 10,000 sq. ft. (or condo complexes, >100,000 sq. ft.) must report annual energy and water use.</h6></p>
+			<p><h6>[3] per Local Law 97/19 and amendment 116/20, affects buildings over 25,000 sq. ft. gross floor area.  Buildings with over 35% affordable units are exempt and can comply via low-cost prescriptive measures.</h6></p>
+            <p><h6>[4] Urban Green Council, <a href="https://www.urbangreencouncil.org/sites/default/files/2020.07.09_urban_green_building_emissions_law_summary_revised_11.17.2020.pdf"> NYC Building Emissions Summary</a>, July 2020.</h6></p>
+            <p><h6>[5] prescriptive measures include: leak repair; adjusted heat and hot-water temperature setpoints; pipe insulation; weatherization; good maintenance.  See the <a href="https://www1.nyc.gov/assets/buildings/local_laws/ll97of2019.pdf"> full law</a>.</h6></p>
+            <p>To learn more about how this dataset was produced, visit the <a href="https://github.com/claudiamezey/decarb-housing">GitHub page</a>.</p>
+        </div>
+		<div id="enter" class="footer">
+			<div class="close-btn">
+				<button class="btn" onclick="enterMap()">Discover</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="legendWindow" class="window menu" style="display: none;">
+		<img class="close" src="./img/close.png" alt="close" onclick="toggleWindow('legendWindow')">
+		<div class="header">
+				<h2>Legend</h2>
+		</div>
+		<div class="content">
+			<table id="legend-main" class="legend" style="width: 100%;"></table>
+		</div>
+	</div>
+	<div id="chartsWindow" class="window menu" style="display: none;height: 480px">
+		<img class="close" src="./img/close.png" alt="close" onclick="toggleWindow('legendWindow')">
+		<div class="header">
+				<h3>A look at affordability status</h3>
+		</div>
+		<div class="content">
+			<div id="chart_toPlot"></div>
+		</div>
+		<div class="explanatory"> 
+			<h6>19 properties currently* exceed their 2024 carbon emissions limit and do not have enough affordable units to claim exemption from hefty fines.   There are another 134 properties exceeding their 2024 limit whose affordable unit offerings are set to expire before 2024.  If unit affordability is not preserved or extended, these properties will also be at risk of fines.  An additional 93 properties emitting in excess of their 2024 and 2030 CO2 limits must extend their expiring affordability statutes between 2030-2034 or else pay fines. *2017
+			</h6>
+		</div>
+	</div>
+
+<!--	<nav id='toggle'>
+	</nav>-->
+
+  <div id="map"></div>
+
+	<script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v0.18.0/mapbox-gl-draw.js'></script>
+	<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.9/mapbox-gl-draw.css" type="text/css" />
+	<!--<script src="https://d3js.org/d3.v3.min.js"></script>-->
+    <script src="/app/app.js"></script>
+
+</body>
